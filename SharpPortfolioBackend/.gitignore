@@ -1,0 +1,16 @@
+﻿# Build results
+bin/
+obj/
+
+# Environment variables
+.env
+
+# User-specific files
+*.user
+
+# Project-specific tooling
+.junie/
+
+# Uploaded/generated content
+wwwroot/audio/*
+!wwwroot/audio/.gitkeep
