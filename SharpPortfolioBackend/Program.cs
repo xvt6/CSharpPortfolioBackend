@@ -1,41 +1,36 @@
+using Dapper;
+using SharpPortfolioBackend.Data;
+using Microsoft.Extensions.Logging;
+using DotNetEnv;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+
+Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
+builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.MapGet("/", () => "Hello World!");
+app.MapGet("/test-db", async (IDbConnectionFactory factory, ILogger<DbConnectionFactory> logger) =>
 {
-    app.MapOpenApi();
-}
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    try
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+        using var connection = factory.Create();
+        connection.Open();
+        var result = await connection.QueryAsync<String>("SELECT 'Hello Oracle XE' FROM Dual");
+        return Results.Ok(result);
+    }
+    catch (Exception e)
+    {
+        logger.LogError(e, "Error connecting to database");
+        return Results.InternalServerError();
+    }
+});
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
