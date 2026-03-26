@@ -8,13 +8,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5"/>
+        <PackageReference Include="Dapper" Version="2.1.72" />
+        <PackageReference Include="DotNetEnv" Version="3.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+        <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.26.100" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+      <Content Include=".junie\guidelines.md" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Utils\" />
+      <Folder Include="wwwroot\audio\" />
     </ItemGroup>
 
 </Project>
