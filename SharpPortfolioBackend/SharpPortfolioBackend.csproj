@@ -9,10 +9,16 @@
 
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.72" />
+        <PackageReference Include="dbup" Version="5.0.41" />
+        <PackageReference Include="dbup-oracle" Version="6.2.0" />
         <PackageReference Include="DotNetEnv" Version="3.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
         <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.26.100" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <EmbeddedResource Include="Database\Migrations\*.sql" />
     </ItemGroup>
 
     <ItemGroup>

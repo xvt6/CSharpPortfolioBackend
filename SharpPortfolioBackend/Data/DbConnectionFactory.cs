@@ -28,5 +28,7 @@ namespace SharpPortfolioBackend.Data
             _logger.LogDebug("Creating Oracle connection");
             return new OracleConnection(_connectionString);
         }
+        
+        public string GetConnectionString() => _connectionString;
     }
 }

@@ -1,4 +1,7 @@
+using System.Reflection;
 using Dapper;
+using DbUp;
+using DbUp.Oracle;
 using SharpPortfolioBackend.Data;
 using Microsoft.Extensions.Logging;
 using DotNetEnv;
@@ -15,6 +18,24 @@ builder.Logging.AddConsole();
 builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 
 var app = builder.Build();
+var logger = app.Logger;
+var factory = app.Services.GetRequiredService<IDbConnectionFactory>();
+var connection = ((DbConnectionFactory)factory).GetConnectionString();
+
+var upgrader = DeployChanges.To.
+    OracleDatabase(connection).
+    WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), s=> s.EndsWith(".sql"))
+    .LogToConsole()
+    .Build();
+
+var result = upgrader.PerformUpgrade();
+
+if (!result.Successful)
+{
+    logger.LogError("Error updating database");
+    throw new Exception("Error updating database");   
+}
+logger.LogInformation("Database upgrade completed successfully");
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/test-db", async (IDbConnectionFactory factory, ILogger<DbConnectionFactory> logger) =>
@@ -33,4 +54,20 @@ app.MapGet("/test-db", async (IDbConnectionFactory factory, ILogger<DbConnection
     }
 });
 
+
+app.MapGet("/tables", async (IDbConnectionFactory factory, ILogger<DbConnectionFactory> logger) =>
+{
+    try
+    {
+        using var connection = factory.Create();
+        connection.Open();
+        var tables = await connection.QueryAsync<String>("SELECT table_name FROM user_tables");
+        return Results.Ok(tables);
+    }
+    catch (Exception exception)
+    {
+        logger.LogError(exception, "Error connecting to database");
+        return Results.InternalServerError();
+    }
+});
 app.Run();
