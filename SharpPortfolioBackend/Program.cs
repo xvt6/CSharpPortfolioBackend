@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Scalar.AspNetCore;
 using SharpPortfolioBackend.Services.Implementations;
 using SharpPortfolioBackend.Services.Interfaces;
+using FFMpegCore;
 
 Env.Load();
 
@@ -21,6 +22,14 @@ builder.Logging.AddConsole();
 builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 builder.Services.AddScoped<IAudioService, AudioService>();
 builder.Services.AddScoped<IPostService, PostsService>();
+
+var ffMpegConfig = builder.Configuration.GetSection("FFMpeg");
+var ffMpegBinaryFolder = ffMpegConfig["BinaryFolder"];
+if (!string.IsNullOrEmpty(ffMpegBinaryFolder))
+{
+    GlobalFFOptions.Configure(options => options.BinaryFolder = ffMpegBinaryFolder);
+}
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 

@@ -4,7 +4,7 @@
 
 #POWERSHELL COMMAND
 curl.exe -X POST "http://localhost:5023/api/Audio" `
-  -F "File=@C:/Users/alexs/RiderProjects/SharpPortfolioBackend/SharpPortfolioBackend/.local/sample_data/MS20Hard_kick_160Bpm_C.wav;type=audio/wav" `
+  -F "File=PATHTOWAV;type=audio/wav" `
   -F "Description=This is a test audio file description." `
   -F "BPM=160" `
   -F "MusicKey=C" `
