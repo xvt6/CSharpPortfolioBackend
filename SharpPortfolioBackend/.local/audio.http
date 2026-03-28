@@ -1,0 +1,71 @@
+﻿@SharpPortfolioBackend_HostAddress = {{SharpPortfolioBackend_HostAddress}}
+@LocalWavFilePath = "user_selected"
+@fileIdentifier = some-guid-here
+
+### Create Audio
+# Sends a .wav file with metadata as multipart/form-data
+POST {{SharpPortfolioBackend_HostAddress}}/api/Audio
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="File"; filename="test.wav"
+Content-Type: audio/wav
+
+< {{LocalWavFilePath}}
+--WebAppBoundary
+Content-Disposition: form-data; name="Description"
+
+This is a test audio file description.
+--WebAppBoundary
+Content-Disposition: form-data; name="BPM"
+
+120
+--WebAppBoundary
+Content-Disposition: form-data; name="MusicKey"
+
+C Major
+--WebAppBoundary
+Content-Disposition: form-data; name="Vibes"
+
+Chill
+--WebAppBoundary
+Content-Disposition: form-data; name="Vibes"
+
+Upbeat
+--WebAppBoundary--
+
+### Get Audio Metadata
+GET {{SharpPortfolioBackend_HostAddress}}/api/Audio/{{fileIdentifier}}/metadata
+Accept: application/json
+
+### Search Audio
+# Filters: query, vibes, key, bpm, page, pageSize
+GET {{SharpPortfolioBackend_HostAddress}}/api/Audio?query=test&vibes=Chill&bpm=120&page=1&pageSize=10
+Accept: application/json
+
+### Update Audio Metadata
+PUT {{SharpPortfolioBackend_HostAddress}}/api/Audio/{{fileIdentifier}}
+Content-Type: application/json
+
+{
+  "description": "Updated description",
+  "bpm": 130,
+  "musicKey": "A Minor"
+}
+
+### Delete Audio
+DELETE {{SharpPortfolioBackend_HostAddress}}/api/Audio/{{fileIdentifier}}
+
+### Download Multiple Audio Files (ZIP)
+POST {{SharpPortfolioBackend_HostAddress}}/api/Audio/download-multiple
+Content-Type: application/json
+
+[
+  "{{fileIdentifier}}"
+]
+
+### Get Audio File as MP3
+GET {{SharpPortfolioBackend_HostAddress}}/api/Audio/{{fileIdentifier}}/mp3
+
+### Get Audio File as WAV
+GET {{SharpPortfolioBackend_HostAddress}}/api/Audio/{{fileIdentifier}}/wav
