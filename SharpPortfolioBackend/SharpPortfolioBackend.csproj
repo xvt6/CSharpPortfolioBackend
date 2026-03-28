@@ -15,6 +15,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
         <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.26.100" />
+        <PackageReference Include="FFMpegCore" Version="5.1.0" />
+        <PackageReference Include="Scalar.AspNetCore" Version="2.0.*" />
     </ItemGroup>
     
     <ItemGroup>
@@ -26,11 +28,16 @@
         <Link>.dockerignore</Link>
       </Content>
       <Content Include=".junie\AGENTS.md" />
+      <Content Include=".local\audio.http" />
+      <Content Include=".local\http-client.env.json" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Utils\" />
       <Folder Include="wwwroot\audio\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include=".local\README.md" />
     </ItemGroup>
 
 </Project>
