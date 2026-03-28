@@ -1,4 +1,4 @@
-﻿CREATE USER library IDENTIFIED BY password;
+﻿CREATE USER library IDENTIFIED BY password; --set a real password here, make sure to update .env file
 
 GRANT CREATE SESSION TO library;
 
