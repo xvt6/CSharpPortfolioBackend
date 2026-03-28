@@ -30,6 +30,7 @@
       <Content Include=".junie\AGENTS.md" />
       <Content Include=".local\audio.http" />
       <Content Include=".local\http-client.env.json" />
+      <Content Include=".local\posts.http" />
     </ItemGroup>
 
     <ItemGroup>

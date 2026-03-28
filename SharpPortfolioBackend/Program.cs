@@ -20,6 +20,7 @@ builder.Logging.AddConsole();
 
 builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 builder.Services.AddScoped<IAudioService, AudioService>();
+builder.Services.AddScoped<IPostService, PostsService>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
