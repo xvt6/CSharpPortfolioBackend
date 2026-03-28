@@ -1,0 +1,32 @@
+﻿@SharpPortfolioBackend_HostAddress = {{SharpPortfolioBackend_HostAddress}}
+
+### Get All Posts
+GET {{SharpPortfolioBackend_HostAddress}}/api/posts
+Accept: application/json
+
+### Get Post by Id
+GET {{SharpPortfolioBackend_HostAddress}}/api/posts/1
+Accept: application/json
+
+### Create a New Post
+POST {{SharpPortfolioBackend_HostAddress}}/api/posts
+Content-Type: application/json
+
+{
+  "title": "New Post",
+  "content": "This is a test post",
+  "audioFileIds": [1, 2]
+}
+
+### Update an Existing Post
+PUT {{SharpPortfolioBackend_HostAddress}}/api/posts/1
+Content-Type: application/json
+
+{
+  "title": "Updated Post",
+  "content": "This is an updated test post",
+  "audioFileIds": [1]
+}
+
+### Delete a Post
+DELETE {{SharpPortfolioBackend_HostAddress}}/api/posts/1
