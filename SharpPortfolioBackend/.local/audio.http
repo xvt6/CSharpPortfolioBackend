@@ -1,38 +1,15 @@
 ﻿@SharpPortfolioBackend_HostAddress = {{SharpPortfolioBackend_HostAddress}}
-@LocalWavFilePath = "user_selected"
 @fileIdentifier = some-guid-here
 
-### Create Audio
-# Sends a .wav file with metadata as multipart/form-data
-POST {{SharpPortfolioBackend_HostAddress}}/api/Audio
-Content-Type: multipart/form-data; boundary=WebAppBoundary
 
---WebAppBoundary
-Content-Disposition: form-data; name="File"; filename="test.wav"
-Content-Type: audio/wav
-
-< {{LocalWavFilePath}}
---WebAppBoundary
-Content-Disposition: form-data; name="Description"
-
-This is a test audio file description.
---WebAppBoundary
-Content-Disposition: form-data; name="BPM"
-
-120
---WebAppBoundary
-Content-Disposition: form-data; name="MusicKey"
-
-C Major
---WebAppBoundary
-Content-Disposition: form-data; name="Vibes"
-
-Chill
---WebAppBoundary
-Content-Disposition: form-data; name="Vibes"
-
-Upbeat
---WebAppBoundary--
+#POWERSHELL COMMAND
+curl.exe -X POST "http://localhost:5023/api/Audio" `
+  -F "File=@C:/Users/alexs/RiderProjects/SharpPortfolioBackend/SharpPortfolioBackend/.local/sample_data/MS20Hard_kick_160Bpm_C.wav;type=audio/wav" `
+  -F "Description=This is a test audio file description." `
+  -F "BPM=160" `
+  -F "MusicKey=C" `
+  -F "Vibes=Chill" `
+-F "Vibes=Energetic"
 
 ### Get Audio Metadata
 GET {{SharpPortfolioBackend_HostAddress}}/api/Audio/{{fileIdentifier}}/metadata
