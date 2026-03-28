@@ -6,7 +6,8 @@ CREATE TABLE AudioFiles (
     FileIdentifier VARCHAR2(50) NOT NULL UNIQUE,
     CreatedAt TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
     UpdatedAt TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
-);
+)
+/
 
 -- Posts Table
 CREATE TABLE Posts (
@@ -15,7 +16,8 @@ CREATE TABLE Posts (
     Content VARCHAR2(2000) NOT NULL,
     CreatedAt TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
     UpdatedAt TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
-);
+)
+/
 
 -- Posts-Audio many-to-many link table
 CREATE TABLE PostsAudio (
@@ -24,4 +26,5 @@ CREATE TABLE PostsAudio (
     PRIMARY KEY (PostId, AudioFileId),
     FOREIGN KEY (PostId) REFERENCES Posts(Id) ON DELETE CASCADE,
     FOREIGN KEY (AudioFileId) REFERENCES AudioFiles(Id) ON DELETE CASCADE
-);
+)
+/
