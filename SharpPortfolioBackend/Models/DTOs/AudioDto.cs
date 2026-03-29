@@ -26,3 +26,5 @@ public record UpdateAudioDto(
     float? BPM,
     string? MusicKey
 );
+
+public record AudioFileResult(byte[] Bytes, string DisplayName);

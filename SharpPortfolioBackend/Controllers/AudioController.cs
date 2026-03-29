@@ -106,16 +106,16 @@ public class AudioController : ControllerBase
     [HttpGet("{fileIdentifier}/mp3")]
     public async Task<IActionResult> GetMp3(string fileIdentifier)
     {
-        var fileBytes = await _audioService.GetAudioFileAsync(fileIdentifier, ".mp3");
-        if (fileBytes == null) return NotFound();
-        return File(fileBytes, "audio/mpeg", $"{fileIdentifier}.mp3");
+        var result = await _audioService.GetAudioFileAsync(fileIdentifier, ".mp3");
+        if (result == null) return NotFound();
+        return File(result.Bytes, "audio/mpeg", $"{result.DisplayName}.mp3");
     }
 
     [HttpGet("{fileIdentifier}/wav")]
     public async Task<IActionResult> GetWav(string fileIdentifier)
     {
-        var fileBytes = await _audioService.GetAudioFileAsync(fileIdentifier, ".wav");
-        if (fileBytes == null) return NotFound();
-        return File(fileBytes, "audio/wav", $"{fileIdentifier}.wav");
+        var result = await _audioService.GetAudioFileAsync(fileIdentifier, ".wav");
+        if (result == null) return NotFound();
+        return File(result.Bytes, "audio/wav", $"{result.DisplayName}.wav");
     }
 }

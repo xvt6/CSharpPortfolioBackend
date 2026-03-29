@@ -330,11 +330,17 @@ public class AudioService : IAudioService
         return await connection.QueryAsync<string>("SELECT FileIdentifier FROM AudioFiles");
     }
 
-    public async Task<byte[]?> GetAudioFileAsync(string fileIdentifier, string extension)
+    public async Task<AudioFileResult?> GetAudioFileAsync(string fileIdentifier, string extension)
     {
+        var audioMetadata = await GetAudioMetadataAsync(fileIdentifier);
+        if (audioMetadata == null) return null;
+
         var filePath = Path.Combine(_audioRootPath, fileIdentifier, $"{fileIdentifier}{extension}");
         if (!File.Exists(filePath)) return null;
-        return await File.ReadAllBytesAsync(filePath);
+
+        var bytes = await File.ReadAllBytesAsync(filePath);
+        var downloadName = Path.GetFileNameWithoutExtension(audioMetadata.DisplayName);
+        return new AudioFileResult(bytes, downloadName);
     }
 
     public async Task<byte[]?> DownloadMultipleAsync(List<string> fileIdentifiers)
@@ -348,7 +354,8 @@ public class AudioService : IAudioService
                 if (Directory.Exists(folderPath))
                 {
                     var audioMetadata = await GetAudioMetadataAsync(fileIdentifier);
-                    var displayName = audioMetadata?.DisplayName ?? fileIdentifier;
+                    var rawDisplayName = audioMetadata?.DisplayName ?? fileIdentifier;
+                    var displayName = Path.GetFileNameWithoutExtension(rawDisplayName);
 
                     var wavFile = Path.Combine(folderPath, $"{fileIdentifier}.wav");
                     var mp3File = Path.Combine(folderPath, $"{fileIdentifier}.mp3");

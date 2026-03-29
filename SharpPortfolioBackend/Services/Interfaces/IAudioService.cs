@@ -14,6 +14,6 @@ public interface IAudioService
     Task DeleteAllAudioAsync();
     Task BulkDeleteAudioAsync(List<string> fileIdentifiers);
     Task<IEnumerable<string>> GetAllIdentifiersAsync();
-    Task<byte[]?> GetAudioFileAsync(string fileIdentifier, string extension);
+    Task<AudioFileResult?> GetAudioFileAsync(string fileIdentifier, string extension);
     Task<byte[]?> DownloadMultipleAsync(List<string> fileIdentifiers);
 }
