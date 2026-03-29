@@ -31,6 +31,8 @@
       <Content Include=".local\audio.http" />
       <Content Include=".local\http-client.env.json" />
       <Content Include=".local\posts.http" />
+      <Content Include=".local\sample_data\MS20HardKick_oneshot_C.wav" />
+      <Content Include=".local\sample_data\MS20Hard_kick_160Bpm_C.wav" />
     </ItemGroup>
 
     <ItemGroup>
