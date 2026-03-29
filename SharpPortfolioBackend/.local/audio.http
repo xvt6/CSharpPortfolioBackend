@@ -11,13 +11,21 @@ curl.exe -X POST "http://localhost:5023/api/Audio" `
   -F "Vibes=Chill" `
 -F "Vibes=Energetic"
 
+### Get All Audio
+GET {{SharpPortfolioBackend_HostAddress}}/api/Audio?page=1&pageSize=10
+Accept: application/json
+
+### Get All Audio Identifiers
+GET {{SharpPortfolioBackend_HostAddress}}/api/Audio/identifiers
+Accept: application/json
+
 ### Get Audio Metadata
 GET {{SharpPortfolioBackend_HostAddress}}/api/Audio/{{fileIdentifier}}/metadata
 Accept: application/json
 
 ### Search Audio
 # Filters: query, vibes, key, bpm, page, pageSize
-GET {{SharpPortfolioBackend_HostAddress}}/api/Audio?query=test&vibes=Chill&bpm=120&page=1&pageSize=10
+GET {{SharpPortfolioBackend_HostAddress}}/api/Audio?vibes=Chill&bpm=120&page=1&pageSize=10
 Accept: application/json
 
 ### Update Audio Metadata
@@ -32,6 +40,17 @@ Content-Type: application/json
 
 ### Delete Audio
 DELETE {{SharpPortfolioBackend_HostAddress}}/api/Audio/{{fileIdentifier}}
+
+### Delete All Audio
+DELETE {{SharpPortfolioBackend_HostAddress}}/api/Audio/all
+
+### Bulk Delete Audio
+POST {{SharpPortfolioBackend_HostAddress}}/api/Audio/bulk-delete
+Content-Type: application/json
+
+[
+  "{{fileIdentifier}}"
+]
 
 ### Download Multiple Audio Files (ZIP)
 POST {{SharpPortfolioBackend_HostAddress}}/api/Audio/download-multiple
