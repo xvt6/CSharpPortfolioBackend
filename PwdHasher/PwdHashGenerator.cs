@@ -8,8 +8,8 @@ namespace SharpPortfolioBackend.Utils
     {
         static void Main(string[] args)
         {
-            // Load .env variables by searching upwards from the current directory
-            Env.TraversePath().Load();
+            // Load .env variables
+            Env.Load();
 
             // Read admin password from env
             var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PWD");
