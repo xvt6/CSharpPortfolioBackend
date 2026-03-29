@@ -52,7 +52,13 @@ public class PostsService : IPostService
             new { PostId = id },
             splitOn: "Name");
 
-        return new PostResponseDto(post.Id, post.Title, post.Content, post.CreatedAt, post.UpdatedAt, audioLookup.Values.ToList());
+        return new PostResponseDto(
+            post.Id, 
+            post.Title, 
+            post.Content, 
+            post.CreatedAt, 
+            post.UpdatedAt, 
+            audioLookup.Values.ToList());
     }
 
     public async Task<IEnumerable<PostResponseDto>> GetAllPostsAsync()
@@ -108,14 +114,18 @@ public class PostsService : IPostService
             }
         }
 
-        return posts.Select(p => new PostResponseDto(
-            p.Id,
-            p.Title,
-            p.Content,
-            p.CreatedAt,
-            p.UpdatedAt,
-            postsAudioMap.ContainsKey(p.Id) ? postsAudioMap[p.Id].Values.ToList() : new List<AudioDto>()
-        ));
+        return posts.Select(p =>
+        {
+            var audioFiles = postsAudioMap.ContainsKey(p.Id) ? postsAudioMap[p.Id].Values.ToList() : new List<AudioDto>();
+            return new PostResponseDto(
+                p.Id,
+                p.Title,
+                p.Content,
+                p.CreatedAt,
+                p.UpdatedAt,
+                audioFiles
+            );
+        });
     }
 
     public async Task<PostResponseDto> CreatePostAsync(CreatePostDto createPostDto)
@@ -139,9 +149,12 @@ public class PostsService : IPostService
             await connection.ExecuteAsync(insertPostSql, parameters, transaction);
             var postId = parameters.Get<long>("InsertedId");
 
-            if (createPostDto.AudioFileIds != null)
+            if (createPostDto.AudioFileIdentifiers != null && createPostDto.AudioFileIdentifiers.Any())
             {
-                foreach (var audioId in createPostDto.AudioFileIds)
+                const string getAudioIdsSql = "SELECT Id FROM AudioFiles WHERE FileIdentifier IN :Identifiers";
+                var audioIds = await connection.QueryAsync<long>(getAudioIdsSql, new { Identifiers = createPostDto.AudioFileIdentifiers }, transaction);
+
+                foreach (var audioId in audioIds)
                 {
                     await connection.ExecuteAsync(
                         "INSERT INTO PostsAudio (PostId, AudioFileId) VALUES (:PostId, :AudioId)",
@@ -188,9 +201,12 @@ public class PostsService : IPostService
             // Update audio associations
             await connection.ExecuteAsync("DELETE FROM PostsAudio WHERE PostId = :PostId", new { PostId = id }, transaction);
             
-            if (updatePostDto.AudioFileIds != null)
+            if (updatePostDto.AudioFileIdentifiers != null && updatePostDto.AudioFileIdentifiers.Any())
             {
-                foreach (var audioId in updatePostDto.AudioFileIds)
+                const string getAudioIdsSql = "SELECT Id FROM AudioFiles WHERE FileIdentifier IN :Identifiers";
+                var audioIds = await connection.QueryAsync<long>(getAudioIdsSql, new { Identifiers = updatePostDto.AudioFileIdentifiers }, transaction);
+
+                foreach (var audioId in audioIds)
                 {
                     await connection.ExecuteAsync(
                         "INSERT INTO PostsAudio (PostId, AudioFileId) VALUES (:PostId, :AudioId)",

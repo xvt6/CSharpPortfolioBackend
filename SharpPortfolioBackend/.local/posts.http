@@ -8,14 +8,37 @@ Accept: application/json
 GET {{SharpPortfolioBackend_HostAddress}}/api/posts/1
 Accept: application/json
 
-### Create a New Post
+### Create a Post with 0 Files
 POST {{SharpPortfolioBackend_HostAddress}}/api/posts
 Content-Type: application/json
 
 {
-  "title": "New Post",
-  "content": "This is a test post",
-  "audioFileIds": [1, 2]
+  "title": "Post with 0 Files",
+  "content": "This is a post without any audio files",
+  "audioFileIdentifiers": []
+}
+
+### Create a Post with 1 File
+POST {{SharpPortfolioBackend_HostAddress}}/api/posts
+Content-Type: application/json
+
+{
+  "title": "Post with 1 File",
+  "content": "This is a post with one audio file",
+  "audioFileIdentifiers": ["cf58d8a9-5954-46a3-adbb-1c7f4835d5ad"]
+}
+
+### Create a Post with 2 Files
+POST {{SharpPortfolioBackend_HostAddress}}/api/posts
+Content-Type: application/json
+
+{
+  "title": "Post with 2 Files",
+  "content": "This is a post with two audio files",
+  "audioFileIdentifiers": [
+    "cf58d8a9-5954-46a3-adbb-1c7f4835d5ad",
+    "058a88e9-1ff4-44df-9140-019ead8e8a2b"
+  ]
 }
 
 ### Update an Existing Post
@@ -25,8 +48,10 @@ Content-Type: application/json
 {
   "title": "Updated Post",
   "content": "This is an updated test post",
-  "audioFileIds": [1]
+  "audioFileIdentifiers": ["cf58d8a9-5954-46a3-adbb-1c7f4835d5ad"]
 }
+
+
 
 ### Delete a Post
 DELETE {{SharpPortfolioBackend_HostAddress}}/api/posts/1

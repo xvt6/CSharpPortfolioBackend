@@ -29,6 +29,6 @@ Note: The `Vibes` field in `CreateAudioDto` is a list. To send multiple vibes, i
 To test the Posts CRUD operations using the provided `posts.http` file:
 
 1. Open `.local/posts.http`.
-2. Ensure you have some audio files created first (since posts reference `audioFileIds`).
-3. You can update the `audioFileIds` in the "Create a New Post" request with the actual IDs of the audio files you want to associate with the post.
+2. Ensure you have some audio files created first (since posts reference `audioFileIdentifiers`).
+3. You can update the `audioFileIdentifiers` in the "Create a New Post" request with the actual identifiers of the audio files you want to associate with the post.
 4. Run any of the CRUD requests.
