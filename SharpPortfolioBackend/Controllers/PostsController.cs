@@ -16,10 +16,15 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PostResponseDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<PostResponseDto>>> GetAll(
+        [FromQuery] string? query, 
+        [FromQuery] List<string>? vibes, 
+        [FromQuery] int page = 1, 
+        [FromQuery] int pageSize = 10)
     {
-        var result = await _postsService.GetAllPostsAsync();
-        return Ok(result);
+        var (items, totalCount) = await _postsService.SearchPostsAsync(query, vibes, page, pageSize);
+        Response.Headers.Append("X-Total-Count", totalCount.ToString());
+        return Ok(items);
     }
 
     [HttpGet("{id}")]

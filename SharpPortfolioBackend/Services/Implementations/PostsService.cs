@@ -69,6 +69,59 @@ public class PostsService : IPostService
 
         if (!posts.Any()) return Enumerable.Empty<PostResponseDto>();
 
+        return await EnrichPostsWithAudioAsync(connection, posts);
+    }
+
+    public async Task<(IEnumerable<PostResponseDto> Items, int TotalCount)> SearchPostsAsync(string? query, List<string>? vibes, int page, int pageSize)
+    {
+        using var connection = _dbConnectionFactory.Create();
+        var sql = "FROM Posts p";
+        var whereClauses = new List<string>();
+        var parameters = new DynamicParameters();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            whereClauses.Add("(LOWER(p.Title) LIKE :Query OR LOWER(p.Content) LIKE :Query)");
+            parameters.Add("Query", $"%{query.ToLower()}%");
+        }
+
+        if (vibes != null && vibes.Any())
+        {
+            whereClauses.Add(@"EXISTS (
+                SELECT 1 FROM PostsAudio pa 
+                JOIN AudioFilesVibes afv ON pa.AudioFileId = afv.AudioFileId 
+                JOIN Vibes v ON afv.VibeId = v.Id 
+                WHERE pa.PostId = p.Id AND v.Name IN :Vibes
+            )");
+            parameters.Add("Vibes", vibes);
+        }
+
+        if (whereClauses.Any())
+        {
+            sql += " WHERE " + string.Join(" AND ", whereClauses);
+        }
+
+        var countSql = "SELECT COUNT(DISTINCT p.Id) " + sql;
+        int totalCount = await connection.ExecuteScalarAsync<int>(countSql, parameters);
+
+        if (totalCount == 0) return (Enumerable.Empty<PostResponseDto>(), 0);
+
+        var itemsSql = "SELECT p.Id, p.Title, p.Content, p.CreatedAt, p.UpdatedAt " + sql + 
+                       " ORDER BY p.CreatedAt DESC OFFSET :Offset ROWS FETCH NEXT :PageSize ROWS ONLY";
+        
+        parameters.Add("Offset", (page - 1) * pageSize);
+        parameters.Add("PageSize", pageSize);
+
+        var posts = (await connection.QueryAsync<Post>(itemsSql, parameters)).ToList();
+        var enrichedPosts = await EnrichPostsWithAudioAsync(connection, posts);
+        
+        return (enrichedPosts, totalCount);
+    }
+
+    private async Task<IEnumerable<PostResponseDto>> EnrichPostsWithAudioAsync(IDbConnection connection, List<Post> posts)
+    {
+        if (!posts.Any()) return Enumerable.Empty<PostResponseDto>();
+
         const string audioWithVibesSql = @"
             SELECT pa.PostId, 
                    af.Id, af.DisplayName, af.DESCRIPTION as Description, af.FileIdentifier, af.BPM, af.MusicKey,
@@ -125,7 +178,7 @@ public class PostsService : IPostService
                 p.UpdatedAt,
                 audioFiles
             );
-        });
+        }).ToList();
     }
 
     public async Task<PostResponseDto> CreatePostAsync(CreatePostDto createPostDto)

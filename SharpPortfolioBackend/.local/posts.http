@@ -4,6 +4,22 @@
 GET {{SharpPortfolioBackend_HostAddress}}/api/posts
 Accept: application/json
 
+### Search Posts with keyword
+GET {{SharpPortfolioBackend_HostAddress}}/api/posts?query=test
+Accept: application/json
+
+### Search Posts with vibe
+GET {{SharpPortfolioBackend_HostAddress}}/api/posts?vibes=Dark
+Accept: application/json
+
+### Search Posts with keyword and vibe
+GET {{SharpPortfolioBackend_HostAddress}}/api/posts?query=post&vibes=Energetic
+Accept: application/json
+
+### Get Posts with pagination
+GET {{SharpPortfolioBackend_HostAddress}}/api/posts?page=1&pageSize=2
+Accept: application/json
+
 ### Get Post by Id
 GET {{SharpPortfolioBackend_HostAddress}}/api/posts/1
 Accept: application/json
