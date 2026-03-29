@@ -23,6 +23,11 @@ public class AudioService : IAudioService
     private readonly ILogger<AudioService> _logger;
     private readonly string _audioRootPath;
 
+    private static readonly HashSet<string> ValidMusicKeys = new()
+    {
+        "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"
+    };
+
     public AudioService(IDbConnectionFactory dbConnectionFactory, IWebHostEnvironment env, ILogger<AudioService> logger)
     {
         _dbConnectionFactory = dbConnectionFactory;
@@ -42,16 +47,10 @@ public class AudioService : IAudioService
             throw new ArgumentException("Only .wav files are allowed.");
         }
 
+        ValidateMusicKey(createDto.MusicKey);
+
         using var validationConnection = _dbConnectionFactory.Create();
-        if (createDto.Vibes != null && createDto.Vibes.Any())
-        {
-            var existingVibes = (await validationConnection.QueryAsync<string>("SELECT Name FROM Vibes")).Select(v => v.ToUpper()).ToList();
-            var invalidVibes = createDto.Vibes.Where(v => !existingVibes.Contains(v.ToUpper())).ToList();
-            if (invalidVibes.Any())
-            {
-                throw new ArgumentException($"The following vibes are not allowed: {string.Join(", ", invalidVibes)}");
-            }
-        }
+        await ValidateVibesAsync(validationConnection, createDto.Vibes);
 
         var fileIdentifier = Guid.NewGuid().ToString();
         var folderPath = Path.Combine(_audioRootPath, fileIdentifier);
@@ -240,6 +239,8 @@ public class AudioService : IAudioService
 
     public async Task UpdateAudioAsync(string fileIdentifier, UpdateAudioDto updateDto)
     {
+        ValidateMusicKey(updateDto.MusicKey);
+
         using var connection = _dbConnectionFactory.Create();
         connection.Open();
         using var transaction = connection.BeginTransaction();
@@ -388,6 +389,27 @@ public class AudioService : IAudioService
 
             const string linkSql = "INSERT INTO AudioFilesVibes (AudioFileId, VibeId) VALUES (:AudioId, :VibeId)";
             await connection.ExecuteAsync(linkSql, new { AudioId = audioId, VibeId = vibeId }, transaction);
+        }
+    }
+
+    private void ValidateMusicKey(string? musicKey)
+    {
+        if (!string.IsNullOrEmpty(musicKey) && !ValidMusicKeys.Contains(musicKey.ToUpper()))
+        {
+            throw new ArgumentException($"Invalid MusicKey: {musicKey}. Allowed values are: {string.Join(", ", ValidMusicKeys)}");
+        }
+    }
+
+    private async Task ValidateVibesAsync(IDbConnection connection, List<string>? vibes)
+    {
+        if (vibes != null && vibes.Any())
+        {
+            var existingVibes = (await connection.QueryAsync<string>("SELECT Name FROM Vibes")).Select(v => v.ToUpper()).ToList();
+            var invalidVibes = vibes.Where(v => !existingVibes.Contains(v.ToUpper())).ToList();
+            if (invalidVibes.Any())
+            {
+                throw new ArgumentException($"The following vibes are not allowed: {string.Join(", ", invalidVibes)}");
+            }
         }
     }
 }
