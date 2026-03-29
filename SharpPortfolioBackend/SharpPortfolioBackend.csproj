@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
         <PackageReference Include="Dapper" Version="2.1.72" />
         <PackageReference Include="dbup" Version="5.0.41" />
         <PackageReference Include="dbup-oracle" Version="6.2.0" />
