@@ -67,10 +67,31 @@ public class AudioController : ControllerBase
         }
     }
 
+    [HttpGet("identifiers")]
+    public async Task<ActionResult<IEnumerable<string>>> GetAllIdentifiers()
+    {
+        var identifiers = await _audioService.GetAllIdentifiersAsync();
+        return Ok(identifiers);
+    }
+
     [HttpDelete("{fileIdentifier}")]
     public async Task<IActionResult> Delete(string fileIdentifier)
     {
         await _audioService.DeleteAudioAsync(fileIdentifier);
+        return NoContent();
+    }
+
+    [HttpDelete("all")]
+    public async Task<IActionResult> DeleteAll()
+    {
+        await _audioService.DeleteAllAudioAsync();
+        return NoContent();
+    }
+
+    [HttpPost("bulk-delete")]
+    public async Task<IActionResult> BulkDelete([FromBody] List<string> fileIdentifiers)
+    {
+        await _audioService.BulkDeleteAudioAsync(fileIdentifiers);
         return NoContent();
     }
 

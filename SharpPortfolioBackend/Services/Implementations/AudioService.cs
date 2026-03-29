@@ -279,7 +279,10 @@ public class AudioService : IAudioService
     public async Task DeleteAudioAsync(string fileIdentifier)
     {
         var audio = await GetAudioMetadataAsync(fileIdentifier);
-        if (audio == null) return;
+        if (audio == null)
+        {
+            _logger.LogWarning("Audio metadata for {FileIdentifier} not found during deletion. Cleaning up potential files.", fileIdentifier);
+        }
 
         using var connection = _dbConnectionFactory.Create();
         await connection.ExecuteAsync("DELETE FROM AudioFiles WHERE FileIdentifier = :FileIdentifier", new { FileIdentifier = fileIdentifier });
@@ -289,6 +292,42 @@ public class AudioService : IAudioService
         {
             Directory.Delete(folderPath, true);
         }
+    }
+
+    public async Task DeleteAllAudioAsync()
+    {
+        var identifiers = (await GetAllIdentifiersAsync()).ToList();
+        await BulkDeleteAudioAsync(identifiers);
+
+        // Final cleanup of the root directory
+        if (Directory.Exists(_audioRootPath))
+        {
+            foreach (var directory in Directory.GetDirectories(_audioRootPath))
+            {
+                try
+                {
+                    Directory.Delete(directory, true);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error deleting directory {Directory} during global cleanup", directory);
+                }
+            }
+        }
+    }
+
+    public async Task BulkDeleteAudioAsync(List<string> fileIdentifiers)
+    {
+        foreach (var id in fileIdentifiers)
+        {
+            await DeleteAudioAsync(id);
+        }
+    }
+
+    public async Task<IEnumerable<string>> GetAllIdentifiersAsync()
+    {
+        using var connection = _dbConnectionFactory.Create();
+        return await connection.QueryAsync<string>("SELECT FileIdentifier FROM AudioFiles");
     }
 
     public async Task<byte[]?> GetAudioFileAsync(string fileIdentifier, string extension)

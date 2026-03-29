@@ -11,6 +11,9 @@ public interface IAudioService
     Task<(IEnumerable<AudioDto> Items, int TotalCount)> SearchAudioAsync(string? query, List<string>? vibes, string? key, float? bpm, int page, int pageSize);
     Task UpdateAudioAsync(string fileIdentifier, UpdateAudioDto updateDto);
     Task DeleteAudioAsync(string fileIdentifier);
+    Task DeleteAllAudioAsync();
+    Task BulkDeleteAudioAsync(List<string> fileIdentifiers);
+    Task<IEnumerable<string>> GetAllIdentifiersAsync();
     Task<byte[]?> GetAudioFileAsync(string fileIdentifier, string extension);
     Task<byte[]?> DownloadMultipleAsync(List<string> fileIdentifiers);
 }
